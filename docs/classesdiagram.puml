@@ -1,0 +1,92 @@
+@startuml
+
+' Main Entities'
+class Hotel {
+    - id : long
+    - name : String
+    - category : int
+    - address: String
+    - phone : String
+    - director : Employee
+    - list<Employees> employees: Employee;
+    - list<Room> rooms: Room;
+}
+
+class Employee {
+    - id : long
+    - dni : String
+    - name : String
+    - type : Enum
+    - address : String
+    - hotel: Hotel
+}
+
+class Customer {
+    - id : long
+    - dni : String
+    - name : String
+    - address : String
+    - phone : String
+    - list<Staying> stays;
+}
+
+class Room {
+    - roomId : long
+    - hotel : Hotel
+    - roomType: RoomType
+    - basePrice : Double
+    - status: RoomStatus
+    - list<Staying>: stays;
+}
+
+' Reservas
+class Booking {
+    - id: long
+    - startDate: localDate
+    - endDate: localDate
+    - advanceDeposit: Double
+    - customer: Customer
+    - hotel: Hotel
+    - list<Room> rooms: Room 
+}
+
+' Estancia / Estadia
+class Staying {
+    - id: long
+    - startDate : localDate
+    - endDate: localDate
+    - list<StayingRoom> stayingRoom: StayingRoom
+}
+
+' Estadia por habitacion
+class StayingRoom {
+    - id: long
+    - staying: Staying
+    - room: Room
+    - checkInDate: LocalDate
+    - checkOutDate: checkOutDate;
+    - notes: String
+}
+
+class Invoice {
+    - id : long
+    - Stay: Staying
+    - issueDate : LocalDateTime
+    - totalOfRooms : int
+    - finalTotal : Double
+}
+
+
+' Relationships '
+
+Hotel "1" -- "1" Employee: director >
+Hotel "1" -- "*" Employee: employees >
+Hotel "1" -- "*" Room: rooms >
+
+Customer "1" -- "*" Booking : bookings >
+
+Booking "1" -- "1" Staying: derives >
+Booking "1" -- "*" Room: rooms >
+Staying "1" -- "1" Invoice: generate >
+Staying "1" -- "*" StayingRoom: details >
+@enduml
