@@ -1,8 +1,8 @@
 package edu.unicolombo.trustHotelAPI.service;
 
+import edu.unicolombo.trustHotelAPI.domain.model.Booking;
 import edu.unicolombo.trustHotelAPI.domain.model.Invoice;
-import edu.unicolombo.trustHotelAPI.domain.model.Staying;
-import edu.unicolombo.trustHotelAPI.domain.model.StayingRoom;
+import edu.unicolombo.trustHotelAPI.domain.model.enums.InvoiceType;
 import edu.unicolombo.trustHotelAPI.domain.repository.InvoiceRepository;
 import edu.unicolombo.trustHotelAPI.domain.repository.StayingRepository;
 import edu.unicolombo.trustHotelAPI.dto.invoice.InvoiceDTO;
@@ -11,8 +11,6 @@ import edu.unicolombo.trustHotelAPI.dto.invoice.UpdateInvoiceDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,7 +37,6 @@ public class InvoiceService {
 
     public InvoiceDTO getInvoicesById(long invoiceId) {
         Invoice invoice = invoiceRepository.getReferenceById(invoiceId);
-
         return new InvoiceDTO(invoiceRepository.save(invoice));
     }
 
@@ -54,28 +51,5 @@ public class InvoiceService {
         invoice.updateData(data);
 
         return new InvoiceDTO(invoiceRepository.save(invoice));
-    }
-
-    public Invoice generateInvoice(Long stayingId){
-
-        Staying staying = stayingRepository.getReferenceById(stayingId);
-
-        Invoice invoice = new Invoice();
-        invoice.setStaying(staying);
-        invoice.setIssueDate(LocalDateTime.now());
-        invoice.setFinalTotal(calculateFinalTotal(staying.getStayingRoom()));
-        invoice.setTotalRooms(staying.getStayingRoom().size());
-
-        return invoiceRepository.save(invoice);
-
-    }
-
-    public Double calculateFinalTotal(List<StayingRoom> stayingRooms){
-        Double finalTotal = 0.0;
-        for(StayingRoom stayingRoom: stayingRooms){
-            var nights = ChronoUnit.DAYS.between(stayingRoom.getCheckInDate(), stayingRoom.getCheckOutDate());
-            finalTotal += stayingRoom.getRoom().getPricePerNight() * nights;
-        }
-        return finalTotal;
     }
 }

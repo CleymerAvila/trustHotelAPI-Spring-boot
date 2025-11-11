@@ -5,11 +5,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import edu.unicolombo.trustHotelAPI.domain.model.Booking;
+import edu.unicolombo.trustHotelAPI.domain.model.Hotel;
 import edu.unicolombo.trustHotelAPI.domain.model.enums.BookingStatus;
 import edu.unicolombo.trustHotelAPI.domain.model.enums.RoomStatus;
 import edu.unicolombo.trustHotelAPI.domain.repository.BookingRepository;
 import edu.unicolombo.trustHotelAPI.dto.room.FindAvailableRoomsDTO;
 import edu.unicolombo.trustHotelAPI.service.room.validations.ValidatorDates;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,13 +38,15 @@ public class RoomService {
     @Autowired
     public List<ValidatorDates> datesValidations;
 
-    public Room registerRoom(RegisterNewRoomDTO data){
-        var room = new Room(data);
-        System.out.println("precio base: "+ data.basePrice());
-        var hotel = hotelRepository.getReferenceById(data.hotelId());
-        room.setHotel(hotel);
-        hotel.getRooms().add(room);
-        return roomRepository.save(room);
+    public RoomDTO registerRoom(RegisterNewRoomDTO data){
+        var hotel = hotelRepository.findById(data.hotelId())
+                        .orElseThrow( () -> new EntityNotFoundException("El hotel no ha sido encontrado"));
+
+        Room newRoom = new Room(data);
+        hotel.addRoom(newRoom);
+        Hotel savedHotel =  hotelRepository.save(hotel);
+        var savedRoom = savedHotel.getRooms().get(savedHotel.getRooms().size()-1);
+        return new RoomDTO(savedRoom);
     }
 
     public Room getRoomById(Long id){
@@ -65,29 +69,30 @@ public class RoomService {
         return new RoomDTO(roomRepository.save(room));
     }
 
+    public List<Room> findAvailableRooms(FindAvailableRoomsDTO data){
+        datesValidations.forEach(val -> val.validateDate(data.startDate(), data.endDate()));
+        return roomRepository.findAvailableRooms(data.startDate(), data.endDate());
+    }
+
     @Transactional
     public void updateRoomStatus(){
+
+        /* Some logic to update de current state of rooms daily */
         LocalDate currentDate = LocalDate.now();
         List<Booking> bookings = bookingRepository.findActiveBookings(currentDate);
 
         for(Booking booking: bookings){
-            List<Room> bookedRooms = booking.getRooms();
             if (booking.getStatus().equals(BookingStatus.PENDING)){
-                bookedRooms.forEach(r -> r.setCurrentState(RoomStatus.BOOKED));
-            } else if (booking.getStatus().equals(BookingStatus.CANCELED)
-                        || booking.getStatus().equals(BookingStatus.COMPLETED)){
-                bookedRooms.forEach(r -> r.setCurrentState(RoomStatus.FREE));
-            } else if (booking.getStatus().equals(BookingStatus.CONFIRMED)){
-                bookedRooms.forEach(r -> r.setCurrentState(RoomStatus.OCCUPIED));
+                booking.getRoom().setCurrentState(RoomStatus.BOOKED);
+            } else if( booking.getStatus().equals(BookingStatus.CONFIRMED)){
+                booking.getRoom().setCurrentState(RoomStatus.OCCUPIED);
+            } else {
+                booking.getRoom().setCurrentState(RoomStatus.FREE);
             }
-
+            roomRepository.save(booking.getRoom());
         }
-        System.out.println("Estado de las habitaciones actualizados a la fecha " + currentDate);
+        System.out.println("Estado de las habitaciones actualizados a la fecha " );
     }
 
-    public List<Room> findAvailableRooms(FindAvailableRoomsDTO data){
-        datesValidations.forEach(val -> val.validateDate(data.startDate(), data.endDate()));
-        return roomRepository.findAvailableRooms(data.hotelId(), data.startDate(), data.endDate());
-    }
 
 }

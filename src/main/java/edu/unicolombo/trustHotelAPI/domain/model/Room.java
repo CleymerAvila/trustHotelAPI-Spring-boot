@@ -36,21 +36,32 @@ public class Room {
 
     public Room(RegisterNewRoomDTO data) {
         this.type = data.type();
-        this.pricePerNight = data.basePrice();
+        this.number = data.number();
         this.currentState = RoomStatus.FREE;
+        this.floor = data.floor();
+        this.capacity = data.capacity();
+        this.pricePerNight = data.pricePerNight();
     }
 
     public void updateData(UpdateRoomDTO data) {
-        if (data.type()!=null) {
+        if (data.type()!=null && !data.type().equals(this.type)) {
             this.type = data.type();
         }
 
-        if (data.basePrice()!=null) {
-            this.pricePerNight = data.basePrice();
+        if(data.number()!=null && !data.number().equals(this.number)){
+            this.number = data.number();
         }
 
-        if(data.status()!=null){
-            this.currentState = data.status();
+        if (data.currentState()!=null && !data.currentState().equals(this.currentState)) {
+            this.currentState = data.currentState();
+        }
+
+        if(data.capacity()!=this.capacity){
+            this.capacity = data.capacity();
+        }
+
+        if(data.pricePerNight()!= null && !data.pricePerNight().equals(this.pricePerNight)){
+            this.pricePerNight = data.pricePerNight();
         }
     }
 }

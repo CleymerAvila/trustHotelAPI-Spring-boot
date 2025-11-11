@@ -16,7 +16,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import edu.unicolombo.trustHotelAPI.dto.staying.StayingDTO;
 import edu.unicolombo.trustHotelAPI.dto.staying.UpdateStayingDTO;
-import edu.unicolombo.trustHotelAPI.service.StayingService;
+import edu.unicolombo.trustHotelAPI.service.staying.StayingService;
 
 @RestController
 @RequestMapping("/api/v1/stayings")
@@ -25,12 +25,12 @@ public class StayingController {
     @Autowired
     public StayingService stayingService;
 
-    @PostMapping("/check-in/{bookingId}")
-    public ResponseEntity<StayingDTO> toCheckIn(@PathVariable Long bookingId, UriComponentsBuilder uriBuilder){
-        var registeredStaying = stayingService.toCheckIn(bookingId);
-        URI url = uriBuilder.path("/stayings/{stayingId}").buildAndExpand(registeredStaying.stayingId()).toUri();
-        return ResponseEntity.created(url).body(registeredStaying);
-    }
+//    @PostMapping("/check-in/{bookingId}")
+//    public ResponseEntity<StayingDTO> toCheckIn(@PathVariable Long bookingId, UriComponentsBuilder uriBuilder){
+//        var registeredStaying = stayingService.toCheckIn(bookingId);
+//        URI url = uriBuilder.path("/stayings/{stayingId}").buildAndExpand(registeredStaying.stayingId()).toUri();
+//        return ResponseEntity.created(url).body(registeredStaying);
+//    }
 
     @GetMapping
     public ResponseEntity<List<StayingDTO>> getAllStayings(){
@@ -43,10 +43,15 @@ public class StayingController {
         return ResponseEntity.ok(staying);
     }
 
-    @PutMapping("/check-out/{stayingId}")
-    public ResponseEntity<String> enqueueCheckOut(@PathVariable Long stayingId, @RequestBody UpdateStayingDTO data){
-        stayingService.enqueueCheckOut(stayingId, data);
+    @PutMapping("/confirm-check-out/{stayingId}")
+    public ResponseEntity<String> enqueueCheckOut(@PathVariable Long stayingId){
+        stayingService.processCheckOutToQueue(stayingId);
         return ResponseEntity.accepted().body("Check-out en cola para procesamiento");
+    }
+
+    @PutMapping("/check-out/{stayingId}")
+    public ResponseEntity<StayingDTO> checkOutProcess(@PathVariable Long stayingId){
+        return ResponseEntity.ok(stayingService.checkOut(stayingId));
     }
 
     @PostMapping("/check-out/undo")

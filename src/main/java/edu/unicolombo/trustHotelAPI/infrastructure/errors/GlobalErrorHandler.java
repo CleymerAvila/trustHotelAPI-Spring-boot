@@ -3,6 +3,7 @@ package edu.unicolombo.trustHotelAPI.infrastructure.errors;
 import edu.unicolombo.trustHotelAPI.infrastructure.errors.exception.BusinessLogicValidationException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -15,8 +16,8 @@ import java.util.List;
 public class GlobalErrorHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<Void> noFoundErrorHandler(){
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<String> noFoundErrorHandler(EntityNotFoundException ex){
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(BusinessLogicValidationException.class)
@@ -34,7 +35,7 @@ public class GlobalErrorHandler {
     public ResponseEntity<String> dataIntegrityErrorHandler(DataIntegrityViolationException e){
         return ResponseEntity.badRequest().body("No es posible realizar la acción ya que incumple con la integridad de datos");
     }
-    private record ErrorValidationData(String field, String error){
+    public record ErrorValidationData(String field, String error){
 
         public ErrorValidationData(FieldError error){
             this(error.getField(), error.getDefaultMessage());

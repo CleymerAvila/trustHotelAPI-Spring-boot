@@ -4,9 +4,9 @@ import edu.unicolombo.trustHotelAPI.domain.model.Invoice;
 
 import java.time.LocalDateTime;
 
-public record UpdateInvoiceDTO(LocalDateTime issueDate, int totalOfRooms, Double finalTotal) {
+public record UpdateInvoiceDTO(LocalDateTime issueDate, Double appliedDiscount, Double finalTotal) {
 
     public UpdateInvoiceDTO(Invoice invoice) {
-        this(invoice.getIssueDate(), invoice.getTotalRooms(), invoice.getFinalTotal());
+        this(invoice.getIssueDate(), invoice.getAppliedDiscount(), invoice.getTotalAmount());
     }
 }

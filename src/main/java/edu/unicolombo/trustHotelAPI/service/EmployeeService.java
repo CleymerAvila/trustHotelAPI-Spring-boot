@@ -27,14 +27,14 @@ public class EmployeeService {
         Hotel hotel = hotelRepository.findById(data.hotelId())
                 .orElseThrow(() -> new EntityNotFoundException("Hotel no encontrado"));
 
-        Employee savedEmployee = null;
-        savedEmployee.setHotel(hotel);
-        savedEmployee = employeeRepository.save(savedEmployee);
+        Employee newEmployee = new Employee(data);
+        newEmployee.setHotel(hotel);
+        Employee savedEmployee = employeeRepository.save(newEmployee);
         return new EmployeeDTO(savedEmployee);
     }
 
-    public Employee findById(Long id){
-        return employeeRepository.getReferenceById(id);
+    public EmployeeDTO findById(Long id){
+        return new EmployeeDTO(employeeRepository.getReferenceById(id));
     }
 
     public List<EmployeeDTO> getAllEmployees(){
@@ -69,15 +69,7 @@ public class EmployeeService {
         Employee  employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new EntityNotFoundException("Empleado no encontrado"));
 
-
-
-        if (!data.name().equals(employee.getName())){
-            employee.setName(data.name());
-        }
-
-        if (!data.address().equals(employee.getAddress())){
-            employee.setAddress(data.address());
-        }
+        employee.updateData(data);
         // 4. Guardar cambios
         Employee updatedEmployee = employeeRepository.save(employee);
         return new EmployeeDTO(updatedEmployee);

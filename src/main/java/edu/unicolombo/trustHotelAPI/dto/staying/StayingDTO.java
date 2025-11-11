@@ -4,15 +4,19 @@ import java.time.LocalDate;
 import java.util.List;
 
 import edu.unicolombo.trustHotelAPI.domain.model.Staying;
+import edu.unicolombo.trustHotelAPI.domain.model.enums.StayingStatus;
+import edu.unicolombo.trustHotelAPI.dto.invoice.InvoiceDTO;
 
-public record StayingDTO(Long stayingId, LocalDate startDate, LocalDate endDate,
-                        Long bookingId, List<StayingRoomDTO> stayingRooms, Long invoiceId) {
+public record StayingDTO(Long stayingId, Long bookingId, long roomId,
+                         LocalDate checkInDate, LocalDate checkOutDate, StayingStatus status, Double totalAmount, InvoiceDTO invoice) {
 
     public StayingDTO(Staying staying){
-        this(staying.getStayingId(), staying.getStartDate(), 
-        staying.getEndDate(), staying.getBooking().getBookingId(), 
-        staying.getStayingRoom().stream().map(
-                StayingRoomDTO::new
-        ).toList(), staying.getInvoice()!=null ? staying.getInvoice().getInvoiceId() : 0);
+        this(staying.getStayingId(), staying.getBooking().getBookingId(),
+                staying.getBooking().getRoom().getRoomId(),
+                staying.getCheckInDate(), staying.getCheckOutDate(),
+                staying.getStatus(), staying.getTotalAmount(),
+                staying.getFinalInvoice() != null
+                    ? new InvoiceDTO(staying.getFinalInvoice()) : null
+            );
     }
 }

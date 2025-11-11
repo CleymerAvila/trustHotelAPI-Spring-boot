@@ -33,9 +33,8 @@ public class RoomController {
     @PostMapping
     public ResponseEntity<RoomDTO> registerRoom(@RequestBody RegisterNewRoomDTO data, UriComponentsBuilder uriBuilder){
         var registeredRoom = roomService.registerRoom(data);
-
-        URI url = uriBuilder.path("/rooms/{roomId}").buildAndExpand(registeredRoom.getRoomId()).toUri();
-        return ResponseEntity.created(url).body(new RoomDTO(registeredRoom));
+        URI url = uriBuilder.path("/rooms/{roomId}").buildAndExpand(registeredRoom.roomId()).toUri();
+        return ResponseEntity.created(url).body(registeredRoom);
     }
 
     @GetMapping
@@ -61,7 +60,7 @@ public class RoomController {
         return ResponseEntity.ok(roomService.updateRoom(roomId, data));
     }
 
-    @PostMapping("/available")
+    @GetMapping("/available")
     public ResponseEntity<List<RoomDTO>> getAvailableRooms(@RequestBody FindAvailableRoomsDTO data) {
         var roomList = roomService.findAvailableRooms(data).stream().map(RoomDTO::new).collect(Collectors.toList());
         return ResponseEntity.ok(roomList);

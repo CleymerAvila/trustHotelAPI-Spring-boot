@@ -1,10 +1,12 @@
 package edu.unicolombo.trustHotelAPI.dto.employee;
 
+import edu.unicolombo.trustHotelAPI.domain.model.enums.EmployeeDepartment;
 import edu.unicolombo.trustHotelAPI.domain.model.enums.EmployeeType;
 
 public record UpdateEmployeeDTO(
-        String name,
+        String email,
         String address,
-        EmployeeType type) {
-
+        EmployeeType type,
+        EmployeeDepartment department,
+        String phone) {
 }

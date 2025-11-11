@@ -46,14 +46,21 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.getBookingById(bookingId));
     }
 
-    @GetMapping("/customerDni/{customerDni}")
-    public ResponseEntity<List<BookingDTO>> getAllBookingByCustomer(@PathVariable("customerDni") String customerDni){
-        return ResponseEntity.ok(bookingService.getBookingByCustomerDni(customerDni));
+    @GetMapping("/client/dni/{clientDni}")
+    public ResponseEntity<List<BookingDTO>> getAllBookingsByClientDni(@PathVariable("clientDni") String clientDni){
+        return ResponseEntity.ok(bookingService.getBookingsByClientDni(clientDni));
     }
     @DeleteMapping("/{bookingId}")
     @Transactional
     public ResponseEntity<Void> deleteBooking(@PathVariable Long bookingId){
         bookingService.deleteById(bookingId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/cancel/{bookingId}")
+    @Transactional
+    public ResponseEntity<Void> cancelBooking(@PathVariable Long bookingId){
+        bookingService.cancelBooking(bookingId);
         return ResponseEntity.noContent().build();
     }
 
@@ -63,4 +70,16 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.updateBooking(bookingId, data));
     }
 
+
+    @PutMapping("/check-in/{bookingId}")
+    @Transactional
+    public ResponseEntity<BookingDTO> checkIn(@PathVariable Long bookingId){
+        return ResponseEntity.ok(bookingService.checkIn(bookingId));
+    }
+
+    @PutMapping("/confirm-check-in/{bookingId}")
+    @Transactional
+    public ResponseEntity<BookingDTO> confirmCheckIn(@PathVariable long bookingId){
+        return ResponseEntity.ok(bookingService.confirmCheckIn(bookingId));
+    }
 }

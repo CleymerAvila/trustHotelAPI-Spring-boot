@@ -45,6 +45,15 @@ public class Hotel {
         this.phone = data.phone();
     }
 
+    public void addEmployee(Employee employee){
+        employees.add(employee);
+        employee.setHotel(this);
+    }
+
+    public void addRoom(Room room){
+        rooms.add(room);
+        room.setHotel(this);
+    }
     public void updateData(UpdateHotelDTO data) {
 
         if(data.name() != null) {

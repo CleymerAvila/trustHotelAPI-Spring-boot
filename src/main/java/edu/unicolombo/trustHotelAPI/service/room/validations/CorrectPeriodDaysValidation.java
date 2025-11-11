@@ -10,9 +10,11 @@ import java.time.temporal.ChronoUnit;
 public class CorrectPeriodDaysValidation implements ValidatorDates{
     @Override
     public void validateDate(LocalDate startDate, LocalDate endDate) {
-        var nightsByDateRange = ChronoUnit.DAYS.between(startDate, endDate);
-        if (nightsByDateRange < 1  || nightsByDateRange > 30){
-            throw new BusinessLogicValidationException("No se permite esta cantidad de noches en la reservacion");
+        if(!endDate.isBefore(startDate)) {
+            var nightsByDateRange = ChronoUnit.DAYS.between(startDate, endDate);
+            if (nightsByDateRange < 1 || nightsByDateRange > 30) {
+                throw new BusinessLogicValidationException("No se permite esta cantidad de noches en la reservacion");
+            }
         }
     }
 }

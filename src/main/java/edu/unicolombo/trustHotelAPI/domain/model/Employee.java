@@ -38,13 +38,14 @@ public class Employee {
     // private User user;
 
     public Employee(String dni, String name, String address,
-                        EmployeeType type, EmployeeDepartment department, String phone ) {
+                        EmployeeType type, EmployeeDepartment department, String phone, String email ) {
         this.dni= dni;
         this.name = name;
         this.address = address;
         this.type = type;
         this.department = department;
         this.phone = phone;
+        this.email = email;
     }
 
     public Employee(RegisterNewEmployeeDTO data){
@@ -52,19 +53,30 @@ public class Employee {
         this.name = data.name();
         this.address = data.address();
         this.type = data.type();
+        this.department = data.department();
+        this.phone = data.phone();
+        this.email = data.email();
     }
 
     public void updateData(UpdateEmployeeDTO data){
-        if (data.name()!=null) {
-            this.name = data.name();
+        if (data.email()!= null && !data.email().equals(this.getEmail())){
+            this.setEmail(data.email());
         }
 
-        if (data.address()!=null) {
-            this.address = data.address(); 
+        if (data.address()!=null && !data.address().equals(this.getAddress())){
+            this.setAddress(data.address());
         }
 
-        if (data.type() != null) {
-            this.type = data.type();
+        if(data.type()!=null && !data.type().equals(this.getType())){
+            this.setType(data.type());
+        }
+
+        if(data.department()!= null && !data.department().equals(this.getDepartment())){
+            this.setDepartment(data.department());
+        }
+
+        if(data.phone()!= null && !data.phone().equals(this.phone)){
+            this.setPhone(data.phone());
         }
     }
 

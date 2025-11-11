@@ -4,15 +4,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import edu.unicolombo.trustHotelAPI.domain.model.enums.StayingStatus;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -28,14 +21,16 @@ public class Staying {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long stayingId;
-
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private LocalDate checkInDate;
+    private LocalDate checkOutDate;
+    @Enumerated(EnumType.STRING)
+    private StayingStatus status;
+    private Double totalAmount;
     @OneToOne
-    @JoinColumn(name = "booking_id", unique = true)
+    @JoinColumn(name = "booking_id", nullable = false, unique = true)
     private Booking booking;
-    @OneToMany(mappedBy = "staying", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<StayingRoom> stayingRoom = new ArrayList<>();
-    @OneToOne(mappedBy = "staying")
-    private Invoice invoice;
+    // factura final tambien opcional (0..1)
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "final_invoice", referencedColumnName = "invoiceId", nullable = true, unique = true)
+    private Invoice finalInvoice;
 }

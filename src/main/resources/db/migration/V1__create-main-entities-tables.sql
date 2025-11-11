@@ -28,7 +28,7 @@ CREATE TABLE hotel_promotion(
 
 CREATE TABLE rooms (
 	room_id INT PRIMARY KEY AUTO_INCREMENT,
-    type VARCHAR(20) NOT NULL UNIQUE,
+    type VARCHAR(20) NOT NULL,
     number VARCHAR(10) NULL UNIQUE,
     current_state VARCHAR(30) NOT NULL,
     floor TINYINT NOT NULL,
@@ -89,9 +89,10 @@ CREATE TABLE bookings (
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
     status VARCHAR(20) NOT NULL,
-	advancePayment DECIMAL(10,2),
+	advance_payment DECIMAL(10,2),
     client_id INT NOT NULL,
 	room_id INT NOT NULL,
+	initial_invoice INT NULL,
     -- foreign keys
 	FOREIGN KEY (client_id) REFERENCES clients(client_id),
 	FOREIGN KEY (room_id) REFERENCES rooms(room_id)
@@ -99,11 +100,12 @@ CREATE TABLE bookings (
 
 CREATE TABLE stayings (
 	staying_id INT PRIMARY KEY AUTO_INCREMENT,
-    start_date DATE NOT NULL,
-    end_date DATE NOT NULL,
+    check_in_date DATE NOT NULL,
+    check_out_date DATE NULL,
     status VARCHAR(20) NOT NULL,
 	total_amount DECIMAL(10,2),
-    booking_id INT NOT NULL,
+    booking_id INT NOT NULL UNIQUE,
+    final_invoice INT NULL,
     -- foreign keys
 	FOREIGN KEY (booking_id) REFERENCES bookings(booking_id)
 );
@@ -111,19 +113,16 @@ CREATE TABLE stayings (
 CREATE TABLE invoices(
 	invoice_id INT PRIMARY KEY AUTO_INCREMENT,
     client_id INT NOT NULL,
-    booking_id INT,
-    staying_id INT,
 	invoice_type VARCHAR(10), # INICIAL O FINAL--
-    issue_date DATETIME,
+    issue_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     total_amount DECIMAL(10,2) NOT NULL,
     status VARCHAR(10) NULL,
     discount_type VARCHAR(20) NULL,
     applied_discount DECIMAL(10,2) NULL,
     -- FOREIGN KEYS
-    FOREIGN KEY(client_id) REFERENCES clients(client_id),
-    FOREIGN KEY(booking_id) REFERENCES bookings(booking_id),
-    FOREIGN KEY(staying_id) REFERENCES stayings(staying_id)
+    FOREIGN KEY(client_id) REFERENCES clients(client_id)
 );
+
 
 CREATE TABLE payments(
 	payment_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -131,7 +130,7 @@ CREATE TABLE payments(
     total_amount DECIMAL(10,2) NOT NULL,
     status VARCHAR(20) NOT NULL,
     issue_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    invoice_id INT,
+    invoice_id INT NOT NULL,
     FOREIGN KEY(invoice_id) REFERENCES invoices(invoice_id)
 );
 
