@@ -1,6 +1,6 @@
 package edu.unicolombo.trustHotelAPI.service;
 
-import edu.unicolombo.trustHotelAPI.domain.model.Client;
+import edu.unicolombo.trustHotelAPI.domain.model.person.Client;
 import edu.unicolombo.trustHotelAPI.domain.repository.ClientRepository;
 import edu.unicolombo.trustHotelAPI.dto.client.ClientDTO;
 import edu.unicolombo.trustHotelAPI.dto.client.RegisterNewClientDTO;
@@ -18,7 +18,7 @@ public class ClientService {
     public ClientRepository clientRepository;
 
     public Client registerClient(RegisterNewClientDTO data) {
-        var client = new Client(data);
+        var client = new Client(data.dni(), data.name(), data.phone(), data.email(), data.address());
         return clientRepository.save(client);
     }
 

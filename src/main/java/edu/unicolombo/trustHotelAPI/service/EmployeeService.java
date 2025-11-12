@@ -1,12 +1,13 @@
 package edu.unicolombo.trustHotelAPI.service;
 
-import edu.unicolombo.trustHotelAPI.domain.model.Employee;
+import edu.unicolombo.trustHotelAPI.domain.model.person.Employee;
 import edu.unicolombo.trustHotelAPI.domain.model.Hotel;
+import edu.unicolombo.trustHotelAPI.domain.model.person.Manager;
+import edu.unicolombo.trustHotelAPI.domain.model.person.Personnel;
+import edu.unicolombo.trustHotelAPI.domain.model.person.Receptionist;
 import edu.unicolombo.trustHotelAPI.domain.repository.EmployeeRepository;
 import edu.unicolombo.trustHotelAPI.domain.repository.HotelRepository;
-import edu.unicolombo.trustHotelAPI.dto.employee.EmployeeDTO;
-import edu.unicolombo.trustHotelAPI.dto.employee.RegisterNewEmployeeDTO;
-import edu.unicolombo.trustHotelAPI.dto.employee.UpdateEmployeeDTO;
+import edu.unicolombo.trustHotelAPI.dto.employee.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,31 +28,60 @@ public class EmployeeService {
         Hotel hotel = hotelRepository.findById(data.hotelId())
                 .orElseThrow(() -> new EntityNotFoundException("Hotel no encontrado"));
 
-        Employee newEmployee = new Employee(data);
-        newEmployee.setHotel(hotel);
-        Employee savedEmployee = employeeRepository.save(newEmployee);
-        return new EmployeeDTO(savedEmployee);
+        switch (data.type()) {
+            case "PERSONNEL" -> {
+                Employee newEmployee = new Personnel(data.dni(), data.name(), data.phone(), data.email(), data.salary(), data.workShift(), data.department());
+                newEmployee.setHotel(hotel);
+                Personnel savedEmployee = (Personnel) employeeRepository.save(newEmployee);
+                return new PersonnelDTO(savedEmployee);
+            }
+            case "MANAGER" -> {
+                Employee newEmployee = new Manager(data.dni(), data.name(), data.phone(), data.email(), data.salary(), data.workShift(), data.bonus());
+                newEmployee.setHotel(hotel);
+                Manager savedEmployee = (Manager) employeeRepository.save(newEmployee);
+                return new ManagerDTO(savedEmployee);
+            }
+            case "RECEPTIONIST" -> {
+                Employee newEmployee = new Receptionist(data.dni(), data.name(), data.phone(), data.email(), data.salary(), data.workShift(), data.mainLanguage());
+                newEmployee.setHotel(hotel);
+                Receptionist savedEmployee = (Receptionist) employeeRepository.save(newEmployee);
+                return new ReceptionistDTO(savedEmployee);
+            }
+        }
+        return null;
     }
 
+
+    private EmployeeDTO mapToEmployeeDTO(Employee employee){
+        if(employee instanceof  Manager manager){
+            return new ManagerDTO(manager);
+        } else if(employee instanceof Receptionist receptionist) {
+            return new ReceptionistDTO(receptionist);
+        } else if(employee instanceof Personnel personnel){
+            return new PersonnelDTO(personnel);
+        }
+        return null;
+    }
     public EmployeeDTO findById(Long id){
-        return new EmployeeDTO(employeeRepository.getReferenceById(id));
+        Employee employee = employeeRepository.getReferenceById(id);
+        return mapToEmployeeDTO(employee);
     }
 
     public List<EmployeeDTO> getAllEmployees(){
         return employeeRepository.findAll()
-                .stream().map(EmployeeDTO::new
-                ).toList();
+                .stream()
+                .map(this::mapToEmployeeDTO).toList();
     }
 
     public List<EmployeeDTO> getAllEmployeesByHotel(Long hotelId){
         var hotel = hotelRepository.getReferenceById(hotelId);
         return employeeRepository.findByHotel(hotel)
-                .stream().map(EmployeeDTO::new).toList();
+                .stream().map(this::mapToEmployeeDTO).toList();
     }
 
     public EmployeeDTO getEmployeeById(long employeeId) {
         return employeeRepository.findById(employeeId)
-                .map(EmployeeDTO::new).orElseThrow(() -> new EntityNotFoundException("Empleado no encontrado"));
+                .map(this::mapToEmployeeDTO).orElseThrow(() -> new EntityNotFoundException("Empleado no encontrado"));
     }
 
     public void deleteById(long employeeId){
@@ -69,9 +99,19 @@ public class EmployeeService {
         Employee  employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new EntityNotFoundException("Empleado no encontrado"));
 
-        employee.updateData(data);
-        // 4. Guardar cambios
-        Employee updatedEmployee = employeeRepository.save(employee);
-        return new EmployeeDTO(updatedEmployee);
+        if(data instanceof  UpdateManagerDTO updateData){
+            var manager = (Manager) employee;
+            manager.updateData(updateData);
+            employeeRepository.save(manager);
+        } else if(data instanceof  UpdateReceptionistDTO updateData){
+            var receptionist = (Receptionist) employee;
+            receptionist.updateData(updateData);
+            employeeRepository.save(receptionist);
+        } else if(data instanceof UpdatePersonnelDTO updateData){
+            var personnel = (Personnel) employee;
+            personnel.updateData(updateData);
+            employeeRepository.save(personnel);
+        }
+        return mapToEmployeeDTO(employee);
     }
 }

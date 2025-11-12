@@ -64,6 +64,7 @@ CREATE TABLE clients (
     email VARCHAR(100) NOT NULL,
     address VARCHAR(200) NOT NULL,
     phone VARCHAR(10) NOT NULL,
+    active TINYINT(1) NOT NULL DEFAULT 1,
     user_id INT NULL,
 	FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
@@ -73,12 +74,16 @@ CREATE TABLE employees (
 	dni VARCHAR(10) NOT NULL UNIQUE,
     name VARCHAR(50) NOT NULL,
     email VARCHAR(100) NOT NULL,
-    address VARCHAR(200) NOT NULL,
-	type VARCHAR(100) NOT NULL,
-	department VARCHAR(100) NOT NULL,
     phone VARCHAR(10) NOT NULL,
+    salary DECIMAL(10, 2) NOT NULL,
+    work_shift VARCHAR(20) NOT NULL,
+	type VARCHAR(100) NOT NULL,
+    bonus DECIMAL(10, 2) NULL,
+    main_language VARCHAR(30) NULL,
+	department VARCHAR(100) NULL,
     user_id INT NULL,
     hotel_id INT NOT NULL,
+    active TINYINT(1) NOT NULL DEFAULT 1,
     -- foreign keys
     FOREIGN KEY (hotel_id) REFERENCES hotels(hotel_id) ON DELETE CASCADE,
 	FOREIGN KEY (user_id) REFERENCES users(user_id)

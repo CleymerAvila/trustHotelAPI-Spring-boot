@@ -2,6 +2,10 @@ package edu.unicolombo.trustHotelAPI.infrastructure.security;
 
 import java.util.Arrays;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.unicolombo.trustHotelAPI.dto.employee.UpdateManagerDTO;
+import edu.unicolombo.trustHotelAPI.dto.employee.UpdatePersonnelDTO;
+import edu.unicolombo.trustHotelAPI.dto.employee.UpdateReceptionistDTO;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -42,5 +46,14 @@ public class SecurityConfiguration {
             .exceptionHandling(c -> c.authenticationEntryPoint(
             new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
             .build();
+    }
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper mapper= new ObjectMapper();
+
+        mapper.registerSubtypes(UpdateManagerDTO.class, UpdateReceptionistDTO.class, UpdatePersonnelDTO.class);
+
+        return mapper;
     }
 }

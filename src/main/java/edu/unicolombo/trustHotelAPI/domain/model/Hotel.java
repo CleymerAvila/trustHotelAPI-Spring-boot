@@ -2,6 +2,7 @@ package edu.unicolombo.trustHotelAPI.domain.model;
 
 import java.util.List;
 
+import edu.unicolombo.trustHotelAPI.domain.model.person.Employee;
 import edu.unicolombo.trustHotelAPI.dto.hotel.RegisterNewHotelDTO;
 import edu.unicolombo.trustHotelAPI.dto.hotel.UpdateHotelDTO;
 import jakarta.persistence.*;

@@ -1,6 +1,7 @@
 package edu.unicolombo.trustHotelAPI.domain.model;
 
 import edu.unicolombo.trustHotelAPI.domain.model.enums.InvoiceType;
+import edu.unicolombo.trustHotelAPI.domain.model.person.Client;
 import edu.unicolombo.trustHotelAPI.dto.invoice.RegisterNewInvoiceDTO;
 import edu.unicolombo.trustHotelAPI.dto.invoice.UpdateInvoiceDTO;
 import jakarta.persistence.*;
@@ -9,7 +10,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity(name = "Invoice")

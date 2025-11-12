@@ -1,11 +1,9 @@
 package edu.unicolombo.trustHotelAPI.domain.model;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 import edu.unicolombo.trustHotelAPI.domain.model.enums.BookingStatus;
-import edu.unicolombo.trustHotelAPI.domain.model.enums.InvoiceType;
+import edu.unicolombo.trustHotelAPI.domain.model.person.Client;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

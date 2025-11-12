@@ -1,6 +1,6 @@
 package edu.unicolombo.trustHotelAPI.domain.repository;
 
-import edu.unicolombo.trustHotelAPI.domain.model.Employee;
+import edu.unicolombo.trustHotelAPI.domain.model.person.Employee;
 import edu.unicolombo.trustHotelAPI.domain.model.Hotel;
 
 import java.util.List;
