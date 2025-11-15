@@ -37,30 +37,18 @@ CREATE TABLE rooms (
     hotel_id INT NOT NULL,
 	FOREIGN KEY (hotel_id) REFERENCES hotels(hotel_id) ON DELETE CASCADE
 );
-
-CREATE TABLE roles(
-	role_id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(50) NOT NULL UNIQUE
-);
 CREATE TABLE users(
 	user_id INT PRIMARY KEY AUTO_INCREMENT,
-    username VARCHAR(20) NOT NULL,
+    name VARCHAR(150) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL
-);
-
-CREATE TABLE user_role(
-	user_id INT,
-    role_id INT,
-    PRIMARY KEY(user_id, role_id),
-    FOREIGN KEY(user_id) REFERENCES users(user_id),
-    FOREIGN KEY(role_id) REFERENCES roles(role_Id)
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(20) NOT NULL
 );
 
 CREATE TABLE clients (
 	client_id INT PRIMARY KEY AUTO_INCREMENT,
     dni VARCHAR(10) NOT NULL UNIQUE,
-    name VARCHAR(50) NOT NULL,
+    name VARCHAR(150) NOT NULL,
     email VARCHAR(100) NOT NULL,
     address VARCHAR(200) NOT NULL,
     phone VARCHAR(10) NOT NULL,
@@ -72,7 +60,7 @@ CREATE TABLE clients (
 CREATE TABLE employees (
 	employee_id INT PRIMARY KEY AUTO_INCREMENT,
 	dni VARCHAR(10) NOT NULL UNIQUE,
-    name VARCHAR(50) NOT NULL,
+    name VARCHAR(150) NOT NULL,
     email VARCHAR(100) NOT NULL,
     phone VARCHAR(10) NOT NULL,
     salary DECIMAL(10, 2) NOT NULL,
@@ -154,3 +142,6 @@ CREATE TABLE room_service_staying(
     FOREIGN KEY(staying_id) REFERENCES stayings(staying_id),
     FOREIGN KEY(room_service_id) REFERENCES room_services(room_service_id)
 );
+
+
+
