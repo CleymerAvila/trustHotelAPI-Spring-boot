@@ -1,5 +1,7 @@
 package edu.unicolombo.trustHotelAPI.service;
 
+import edu.unicolombo.trustHotelAPI.domain.model.User;
+import edu.unicolombo.trustHotelAPI.domain.model.enums.UserRole;
 import edu.unicolombo.trustHotelAPI.domain.model.person.Employee;
 import edu.unicolombo.trustHotelAPI.domain.model.Hotel;
 import edu.unicolombo.trustHotelAPI.domain.model.person.Manager;
@@ -7,10 +9,12 @@ import edu.unicolombo.trustHotelAPI.domain.model.person.Personnel;
 import edu.unicolombo.trustHotelAPI.domain.model.person.Receptionist;
 import edu.unicolombo.trustHotelAPI.domain.repository.EmployeeRepository;
 import edu.unicolombo.trustHotelAPI.domain.repository.HotelRepository;
+import edu.unicolombo.trustHotelAPI.domain.repository.UserRepository;
 import edu.unicolombo.trustHotelAPI.dto.employee.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,31 +28,17 @@ public class EmployeeService {
     @Autowired
     public HotelRepository hotelRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public EmployeeDTO registerEmployee(RegisterNewEmployeeDTO data){
         Hotel hotel = hotelRepository.findById(data.hotelId())
                 .orElseThrow(() -> new EntityNotFoundException("Hotel no encontrado"));
 
-        switch (data.type()) {
-            case "PERSONNEL" -> {
-                Employee newEmployee = new Personnel(data.dni(), data.name(), data.phone(), data.email(), data.salary(), data.workShift(), data.department());
-                newEmployee.setHotel(hotel);
-                Personnel savedEmployee = (Personnel) employeeRepository.save(newEmployee);
-                return new PersonnelDTO(savedEmployee);
-            }
-            case "MANAGER" -> {
-                Employee newEmployee = new Manager(data.dni(), data.name(), data.phone(), data.email(), data.salary(), data.workShift(), data.bonus());
-                newEmployee.setHotel(hotel);
-                Manager savedEmployee = (Manager) employeeRepository.save(newEmployee);
-                return new ManagerDTO(savedEmployee);
-            }
-            case "RECEPTIONIST" -> {
-                Employee newEmployee = new Receptionist(data.dni(), data.name(), data.phone(), data.email(), data.salary(), data.workShift(), data.mainLanguage());
-                newEmployee.setHotel(hotel);
-                Receptionist savedEmployee = (Receptionist) employeeRepository.save(newEmployee);
-                return new ReceptionistDTO(savedEmployee);
-            }
-        }
-        return null;
+        return registerEmployeeByType(data, hotel);
     }
 
 
@@ -113,5 +103,43 @@ public class EmployeeService {
             employeeRepository.save(personnel);
         }
         return mapToEmployeeDTO(employee);
+    }
+
+    public EmployeeDTO registerEmployeeByType(RegisterNewEmployeeDTO data, Hotel hotel){
+        switch (data.type()) {
+            case "PERSONNEL" -> {
+                Employee newEmployee = new Personnel(data.dni(), data.name(), data.phone(), data.email(), data.salary(), data.workShift(), data.department());
+                newEmployee.setHotel(hotel);
+                Personnel savedEmployee = (Personnel) employeeRepository.save(newEmployee);
+                return new PersonnelDTO(savedEmployee);
+            }
+            case "MANAGER" -> {
+                Employee newEmployee = new Manager(data.dni(), data.name(), data.phone(), data.email(), data.salary(), data.workShift(), data.bonus());
+                newEmployee.setHotel(hotel);
+                User user = new User();
+                user.setName(newEmployee.getName());
+                user.setEmail(newEmployee.getEmail());
+                user.setPassword(passwordEncoder.encode(newEmployee.getEmail()));
+                user.setRole(UserRole.ROLE_MANAGER);
+                userRepository.save(user);
+                newEmployee.setUser(user);
+                Manager savedEmployee = (Manager) employeeRepository.save(newEmployee);
+                return new ManagerDTO(savedEmployee);
+            }
+            case "RECEPTIONIST" -> {
+                Employee newEmployee = new Receptionist(data.dni(), data.name(), data.phone(), data.email(), data.salary(), data.workShift(), data.mainLanguage());
+                newEmployee.setHotel(hotel);
+                User user = new User();
+                user.setName(newEmployee.getName());
+                user.setEmail(newEmployee.getEmail());
+                user.setPassword(passwordEncoder.encode(newEmployee.getEmail()));
+                user.setRole(UserRole.ROLE_RECEPTIONIST);
+                userRepository.save(user);
+                newEmployee.setUser(user);
+                Receptionist savedEmployee = (Receptionist) employeeRepository.save(newEmployee);
+                return new ReceptionistDTO(savedEmployee);
+            }
+        }
+        return null;
     }
 }
