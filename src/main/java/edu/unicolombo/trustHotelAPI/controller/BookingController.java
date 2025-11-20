@@ -37,7 +37,7 @@ public class BookingController {
         return ResponseEntity.created(url).body(registeredBooking);
     }
 
-    @PreAuthorize("hasRole('ROLE_RECEPTIONIST')")
+    @PreAuthorize("hasRole('RECEPTIONIST')")
     @GetMapping
     public ResponseEntity<List<BookingDTO>> getAllBookings(){
         return ResponseEntity.ok(bookingService.getAllBookings());

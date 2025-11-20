@@ -53,4 +53,9 @@ public class HotelController {
         return ResponseEntity.ok(hotelService.updateHotel(hotelId, data));
     }
 
+    @GetMapping("/get-hotel-info")
+    public ResponseEntity<HotelDTO> getHotelInfo(){
+        return ResponseEntity.ok(new HotelDTO(hotelRepository.findAll().stream().findFirst().orElseThrow()));
+    }
+
 }

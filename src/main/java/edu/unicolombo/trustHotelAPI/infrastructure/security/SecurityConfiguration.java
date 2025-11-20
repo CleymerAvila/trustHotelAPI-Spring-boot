@@ -3,6 +3,7 @@ package edu.unicolombo.trustHotelAPI.infrastructure.security;
 import java.util.Arrays;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import edu.unicolombo.trustHotelAPI.dto.employee.UpdateManagerDTO;
 import edu.unicolombo.trustHotelAPI.dto.employee.UpdatePersonnelDTO;
 import edu.unicolombo.trustHotelAPI.dto.employee.UpdateReceptionistDTO;
@@ -54,10 +55,14 @@ public class SecurityConfiguration {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/**")
                 .permitAll()
-                .requestMatchers("/api/v1/**").hasRole("ADMIN")
                 .requestMatchers("/api/v1/employees/**").hasAnyRole("ADMIN", "MANAGER")
-                    .requestMatchers("/api/v1/clients/**").hasRole("RECEPTIONIST")
-                .anyRequest().authenticated()
+                    .requestMatchers("/api/v1/clients/**").hasAnyRole("ADMIN", "RECEPTIONIST")
+                    .requestMatchers("/api/v1/rooms/**").hasAnyRole("ADMIN", "MANAGER")
+                    .requestMatchers("/api/v1/hotels/**").hasAnyRole("ADMIN", "MANAGER", "RECEPTIONIST")
+                    .requestMatchers("/api/v1/bookings/**").hasAnyRole("ADMIN", "RECEPTIONIST")
+                .requestMatchers("/api/v1/**").hasRole("ADMIN")
+
+                .requestMatchers("/**").authenticated()
             )
             .addFilterBefore(jwtSecurityFilter, UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling(c -> c.authenticationEntryPoint(
@@ -82,6 +87,7 @@ public class SecurityConfiguration {
     @Bean
     public ObjectMapper objectMapper() {
         ObjectMapper mapper= new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
         mapper.registerSubtypes(UpdateManagerDTO.class, UpdateReceptionistDTO.class, UpdatePersonnelDTO.class);
         return mapper;
     }
