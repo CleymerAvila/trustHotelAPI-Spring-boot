@@ -18,8 +18,8 @@ import lombok.NoArgsConstructor;
 public class Receptionist extends Employee{
     private String mainLanguage;
 
-    public Receptionist(String dni, String name, String phone, String email, Double salary, String workShift, boolean active, String mainLanguage){
-        super(dni, name, phone, email, salary, workShift, active);
+    public Receptionist(String dni, String name, String phone, String email, Double salary, String workShift, String mainLanguage){
+        super(dni, name, phone, email, salary, workShift);
         this.mainLanguage = mainLanguage;
     }
 

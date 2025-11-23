@@ -22,8 +22,8 @@ public class Personnel extends Employee {
     @Enumerated(EnumType.STRING)
     private EmployeeDepartment department;
 
-    public Personnel(String dni, String name, String phone, String email, Double salary, String workShift, boolean active, EmployeeDepartment department){
-        super(dni, name, phone, email, salary, workShift, active);
+    public Personnel(String dni, String name, String phone, String email, Double salary, String workShift, EmployeeDepartment department){
+        super(dni, name, phone, email, salary, workShift);
         this.department = department;
     }
 

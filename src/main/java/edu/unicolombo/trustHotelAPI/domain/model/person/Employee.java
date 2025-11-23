@@ -35,10 +35,10 @@ public abstract class Employee  extends  Person{
      @JoinColumn(name = "user_id")
      private User user;
 
-    public Employee(String dni, String name, String phone, String email, double salary, String workShift, boolean active ) {
+    public Employee(String dni, String name, String phone, String email, double salary, String workShift) {
         super(dni, name, phone, email);
         this.salary = salary;
         this.workShift = workShift;
-        this.active = active;
+        this.active = true;
     }
 }
