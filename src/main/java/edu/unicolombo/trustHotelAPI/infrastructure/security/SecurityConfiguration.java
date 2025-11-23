@@ -60,6 +60,7 @@ public class SecurityConfiguration {
                     .requestMatchers("/api/v1/rooms/**").hasAnyRole("ADMIN", "MANAGER")
                     .requestMatchers("/api/v1/hotels/**").hasAnyRole("ADMIN", "MANAGER", "RECEPTIONIST")
                     .requestMatchers("/api/v1/bookings/**").hasAnyRole("ADMIN", "RECEPTIONIST")
+                    .requestMatchers("/api/v1/payments/**").hasAnyRole("ADMIN", "RECEPTIONIST")
                 .requestMatchers("/api/v1/**").hasRole("ADMIN")
 
                 .requestMatchers("/**").authenticated()

@@ -18,8 +18,8 @@ public class Manager extends Employee{
     private Double bonus;
 
 
-    public Manager(String dni, String name, String phone, String email, Double salary, String workShift, Double bonus){
-        super(dni, name, phone, email, salary, workShift);
+    public Manager(String dni, String name, String phone, String email, Double salary, String workShift, boolean active, Double bonus){
+        super(dni, name, phone, email, salary, workShift, active);
         this.bonus = bonus;
     }
 
@@ -36,8 +36,11 @@ public class Manager extends Employee{
         if(data != null && !data.workShift().equals(super.getWorkShift())){
             super.setWorkShift(data.workShift());
         }
-        if(data != null && !data.bonus().equals(this.bonus)){
+        if(data != null && !data.bonus().equals(this.bonus)) {
             this.bonus = data.bonus();
+        }
+        if (data != null && !data.active()) {
+            super.setActive(false);
         }
     }
 }
