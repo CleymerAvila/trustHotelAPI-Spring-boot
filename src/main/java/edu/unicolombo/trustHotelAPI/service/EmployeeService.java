@@ -108,13 +108,13 @@ public class EmployeeService {
     public EmployeeDTO registerEmployeeByType(RegisterNewEmployeeDTO data, Hotel hotel){
         switch (data.type()) {
             case "PERSONNEL" -> {
-                Employee newEmployee = new Personnel(data.dni(), data.name(), data.phone(), data.email(), data.salary(), data.workShift(), data.department());
+                Employee newEmployee = new Personnel(data.dni(), data.name(), data.phone(), data.email(), data.salary(), data.workShift(), data.active(), data.department());
                 newEmployee.setHotel(hotel);
                 Personnel savedEmployee = (Personnel) employeeRepository.save(newEmployee);
                 return new PersonnelDTO(savedEmployee);
             }
             case "MANAGER" -> {
-                Employee newEmployee = new Manager(data.dni(), data.name(), data.phone(), data.email(), data.salary(), data.workShift(), data.bonus());
+                Employee newEmployee = new Manager(data.dni(), data.name(), data.phone(), data.email(), data.salary(), data.workShift(), data.active(), data.bonus());
                 newEmployee.setHotel(hotel);
                 User user = new User();
                 user.setName(newEmployee.getName());
@@ -127,7 +127,7 @@ public class EmployeeService {
                 return new ManagerDTO(savedEmployee);
             }
             case "RECEPTIONIST" -> {
-                Employee newEmployee = new Receptionist(data.dni(), data.name(), data.phone(), data.email(), data.salary(), data.workShift(), data.mainLanguage());
+                Employee newEmployee = new Receptionist(data.dni(), data.name(), data.phone(), data.email(), data.salary(), data.workShift(), data.active(), data.mainLanguage());
                 newEmployee.setHotel(hotel);
                 User user = new User();
                 user.setName(newEmployee.getName());

@@ -26,6 +26,7 @@ public abstract class Employee  extends  Person{
     private Long employeeId;
     private Double salary;
     private String workShift;
+    private boolean active;
     // Relacion ManyToOne cn Hotel (para empleados normales)
     @ManyToOne
     @JoinColumn(name = "hotel_id")
@@ -34,9 +35,10 @@ public abstract class Employee  extends  Person{
      @JoinColumn(name = "user_id")
      private User user;
 
-    public Employee(String dni, String name, String phone, String email, double salary, String workShift ) {
+    public Employee(String dni, String name, String phone, String email, double salary, String workShift, boolean active ) {
         super(dni, name, phone, email);
         this.salary = salary;
         this.workShift = workShift;
+        this.active = active;
     }
 }

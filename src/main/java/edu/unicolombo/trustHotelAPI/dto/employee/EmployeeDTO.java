@@ -11,5 +11,6 @@ public sealed interface EmployeeDTO permits ManagerDTO, ReceptionistDTO, Personn
     String phone();
     Double salary();
     String workShift();
+    boolean active();
     String type();
 }
