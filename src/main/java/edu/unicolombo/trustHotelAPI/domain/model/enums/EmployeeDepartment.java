@@ -1,9 +1,11 @@
 package edu.unicolombo.trustHotelAPI.domain.model.enums;
 
 public enum EmployeeDepartment {
-    RECEPTION,
     HOUSEKEEPING,
     MAINTENANCE,
     MANAGEMENT,
-    FOODS
+    FOODS_AND_BEVERAGE,
+    SALES_AND_MARKETING,
+    HUMAN_RESOURCES,
+    ACCOUNTING
 }

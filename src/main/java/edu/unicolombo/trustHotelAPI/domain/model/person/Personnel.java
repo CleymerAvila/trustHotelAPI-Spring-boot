@@ -4,6 +4,8 @@ import edu.unicolombo.trustHotelAPI.domain.model.enums.EmployeeDepartment;
 import edu.unicolombo.trustHotelAPI.dto.employee.UpdatePersonnelDTO;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -17,6 +19,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Personnel extends Employee {
 
+    @Enumerated(EnumType.STRING)
     private EmployeeDepartment department;
 
     public Personnel(String dni, String name, String phone, String email, Double salary, String workShift, EmployeeDepartment department){

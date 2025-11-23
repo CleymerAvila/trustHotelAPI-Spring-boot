@@ -6,10 +6,10 @@ import edu.unicolombo.trustHotelAPI.domain.model.enums.PaymentStatus;
 
 import java.time.LocalDateTime;
 
-public record RegisterNewPaymentDTO(String paymentMethod, double totalAmount, PaymentStatus status,
-                                    LocalDateTime issueDate, Invoice invoice) {
+public record RegisterNewPaymentDTO(long invoiceId, String paymentMethod, double totalAmount, PaymentStatus status,
+                                    LocalDateTime issueDate) {
     public RegisterNewPaymentDTO(Payment payment) {
-        this(payment.getPaymentMethod(), payment.getTotalAmount(), payment.getStatus(),
-                payment.getIssueDate(), payment.getInvoice());
+        this(payment.getInvoice().getInvoiceId(), payment.getPaymentMethod(), payment.getTotalAmount(), payment.getStatus(),
+                payment.getIssueDate());
     }
 }

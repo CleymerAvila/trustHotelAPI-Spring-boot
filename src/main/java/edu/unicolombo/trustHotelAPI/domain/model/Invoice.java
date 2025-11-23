@@ -11,6 +11,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity(name = "Invoice")
 @Table(name = "invoices")
@@ -37,7 +38,8 @@ public class Invoice {
     @ManyToOne
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
-
+    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Payment> payments;
 
     public Invoice(Staying staying, InvoiceType invoiceType, String discountType, Double appliedDiscount, Double totalAmount) {
         this.staying = staying;
@@ -65,7 +67,6 @@ public class Invoice {
         this.appliedDiscount  = data.appliedDiscount();
         this.totalAmount = data.totalAmount();
     }
-
     public void updateData(UpdateInvoiceDTO data) {
 
 //        if(data.issueDate() != null) {
@@ -79,5 +80,11 @@ public class Invoice {
 //        if (data.finalTotal() != 0) {
 //            this.finalTotal = data.finalTotal();
 //        }
+
+    }
+
+    public void addPayment(Payment payment){
+        payments.add(payment);
+        payment.setInvoice(this);
     }
 }

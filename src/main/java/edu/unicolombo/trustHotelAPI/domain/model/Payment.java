@@ -31,7 +31,6 @@ public class Payment {
     private Invoice invoice;
 
     public Payment(RegisterNewPaymentDTO data) {
-        this.invoice = data.invoice();
         this.paymentMethod = data.paymentMethod();
         this.totalAmount = data.totalAmount();
         this.status = data.status();
