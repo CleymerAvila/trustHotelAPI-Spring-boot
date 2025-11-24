@@ -8,7 +8,7 @@ import edu.unicolombo.trustHotelAPI.domain.model.enums.StayingStatus;
 import edu.unicolombo.trustHotelAPI.dto.invoice.InvoiceDTO;
 
 public record StayingDTO(Long stayingId, Long bookingId, long roomId,
-                         LocalDate checkInDate, LocalDate checkOutDate, StayingStatus status, Double totalAmount, InvoiceDTO invoice) {
+                         LocalDate checkInDate, LocalDate checkOutDate, StayingStatus status, Double totalAmount, long invoiceId) {
 
     public StayingDTO(Staying staying){
         this(staying.getStayingId(), staying.getBooking().getBookingId(),
@@ -16,7 +16,7 @@ public record StayingDTO(Long stayingId, Long bookingId, long roomId,
                 staying.getCheckInDate(), staying.getCheckOutDate(),
                 staying.getStatus(), staying.getTotalAmount(),
                 staying.getFinalInvoice() != null
-                    ? new InvoiceDTO(staying.getFinalInvoice()) : null
+                    ? staying.getFinalInvoice().getInvoiceId() : 0
             );
     }
 }
