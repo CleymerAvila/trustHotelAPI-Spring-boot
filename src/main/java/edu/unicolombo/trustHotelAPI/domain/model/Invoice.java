@@ -1,5 +1,6 @@
 package edu.unicolombo.trustHotelAPI.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import edu.unicolombo.trustHotelAPI.domain.model.enums.InvoiceType;
 import edu.unicolombo.trustHotelAPI.domain.model.person.Client;
 import edu.unicolombo.trustHotelAPI.dto.invoice.RegisterNewInvoiceDTO;
@@ -38,6 +39,7 @@ public class Invoice {
     @ManyToOne
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
+    @JsonManagedReference
     @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Payment> payments;
 

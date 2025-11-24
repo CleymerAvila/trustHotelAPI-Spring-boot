@@ -1,13 +1,16 @@
 package edu.unicolombo.trustHotelAPI.service;
 
-import edu.unicolombo.trustHotelAPI.domain.model.Booking;
 import edu.unicolombo.trustHotelAPI.domain.model.Invoice;
-import edu.unicolombo.trustHotelAPI.domain.model.enums.InvoiceType;
+import edu.unicolombo.trustHotelAPI.domain.model.Room;
 import edu.unicolombo.trustHotelAPI.domain.repository.InvoiceRepository;
 import edu.unicolombo.trustHotelAPI.domain.repository.StayingRepository;
+import edu.unicolombo.trustHotelAPI.dto.client.ClientDTO;
 import edu.unicolombo.trustHotelAPI.dto.invoice.InvoiceDTO;
+import edu.unicolombo.trustHotelAPI.dto.invoice.InvoiceDetailsDTO;
 import edu.unicolombo.trustHotelAPI.dto.invoice.RegisterNewInvoiceDTO;
 import edu.unicolombo.trustHotelAPI.dto.invoice.UpdateInvoiceDTO;
+import edu.unicolombo.trustHotelAPI.dto.payment.PaymentDTO;
+import edu.unicolombo.trustHotelAPI.dto.room.RoomDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,4 +55,48 @@ public class InvoiceService {
 
         return new InvoiceDTO(invoiceRepository.save(invoice));
     }
+
+    public InvoiceDetailsDTO getInvoiceDetails(long id) {
+
+        Invoice invoice = invoiceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Factura no encontrada"));
+
+        // Cliente
+        ClientDTO clientDTO = new ClientDTO(invoice.getClient());
+
+        // Habitación: puede venir de Booking o Staying
+        Room room = null;
+
+        if (invoice.getBooking() != null) {
+            room = invoice.getBooking().getRoom();
+        } else if (invoice.getStaying() != null && invoice.getStaying().getBooking() != null) {
+            room = invoice.getStaying().getBooking().getRoom();
+        }
+
+
+        RoomDTO roomDTO = (room != null) ? new RoomDTO(room) : null;
+
+        // Pagos
+        List<PaymentDTO> paymentDTOs = invoice.getPayments()
+                .stream()
+                .map(PaymentDTO::new)
+                .toList();
+
+        return new InvoiceDetailsDTO(
+            invoice.getInvoiceId(),
+            invoice.getIssueDate(),
+            invoice.getInvoiceType().name(),
+            invoice.getStatus(),
+            invoice.getDiscountType(),
+            invoice.getAppliedDiscount(),
+            invoice.getTotalAmount(),
+            clientDTO,
+            roomDTO,
+            paymentDTOs
+        );
+
+
+    }
+
+
 }
