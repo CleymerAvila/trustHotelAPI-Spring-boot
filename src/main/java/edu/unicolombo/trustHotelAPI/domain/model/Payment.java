@@ -1,5 +1,6 @@
 package edu.unicolombo.trustHotelAPI.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import edu.unicolombo.trustHotelAPI.domain.model.enums.PaymentStatus;
 import edu.unicolombo.trustHotelAPI.dto.payment.RegisterNewPaymentDTO;
 import edu.unicolombo.trustHotelAPI.dto.payment.UpdatePaymentDTO;
@@ -26,6 +27,7 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
     private LocalDateTime issueDate;
+    @JsonManagedReference
     @ManyToOne
     @JoinColumn(name = "invoice_id", nullable = false)
     private Invoice invoice;

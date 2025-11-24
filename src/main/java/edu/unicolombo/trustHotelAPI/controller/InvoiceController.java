@@ -1,6 +1,7 @@
 package edu.unicolombo.trustHotelAPI.controller;
 
 import edu.unicolombo.trustHotelAPI.dto.invoice.InvoiceDTO;
+import edu.unicolombo.trustHotelAPI.dto.invoice.InvoiceDetailsDTO;
 import edu.unicolombo.trustHotelAPI.dto.invoice.RegisterNewInvoiceDTO;
 import edu.unicolombo.trustHotelAPI.dto.invoice.UpdateInvoiceDTO;
 import edu.unicolombo.trustHotelAPI.service.InvoiceService;
@@ -37,6 +38,12 @@ public class InvoiceController {
     public ResponseEntity<InvoiceDTO> getInvoiceById(@PathVariable long invoiceId) {
         return ResponseEntity.ok(invoiceService.getInvoicesById(invoiceId));
     }
+
+    @GetMapping("/{id}/details")
+    public ResponseEntity<InvoiceDetailsDTO> getDetails(@PathVariable long id) {
+        return ResponseEntity.ok(invoiceService.getInvoiceDetails(id));
+    }
+
 
     @DeleteMapping("/{invoiceId}")
     @Transactional
