@@ -60,7 +60,7 @@ public class RoomController {
         return ResponseEntity.ok(roomService.updateRoom(roomId, data));
     }
 
-    @GetMapping("/available")
+    @PostMapping("/available")
     public ResponseEntity<List<RoomDTO>> getAvailableRooms(@RequestBody FindAvailableRoomsDTO data) {
         var roomList = roomService.findAvailableRooms(data).stream().map(RoomDTO::new).collect(Collectors.toList());
         return ResponseEntity.ok(roomList);

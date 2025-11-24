@@ -8,17 +8,17 @@ import edu.unicolombo.trustHotelAPI.domain.model.enums.BookingStatus;
 import edu.unicolombo.trustHotelAPI.dto.invoice.InvoiceDTO;
 import edu.unicolombo.trustHotelAPI.dto.room.RoomDTO;
 
-public record BookingDTO(Long bookingId, long clientId, long roomId,
+public record BookingDTO(Long bookingId, String clientName, String roomNumber,
                          LocalDate startDate, LocalDate endDate, Double advanceDeposit, BookingStatus status,
-                         InvoiceDTO invoice) {
+                         long invoiceId) {
 
     public BookingDTO(Booking booking){
-        this(booking.getBookingId(), booking.getClient().getClientId(),
-                booking.getRoom().getRoomId(),
+        this(booking.getBookingId(), booking.getClient().getName(),
+                booking.getRoom().getNumber(),
                 booking.getStartDate(), booking.getEndDate(),
                 booking.getAdvancePayment(), booking.getStatus(),
                 booking.getInitialInvoice() !=  null
-                        ? new InvoiceDTO(booking.getInitialInvoice()) : null  );
+                        ? booking.getInitialInvoice().getInvoiceId() : 0  );
     }
 
 }
