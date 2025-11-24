@@ -79,7 +79,7 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.checkIn(bookingId));
     }
 
-    @PutMapping("/confirm-check-in/{bookingId}")
+    @GetMapping("/confirm-check-in/{bookingId}")
     @Transactional
     public ResponseEntity<BookingDTO> confirmCheckIn(@PathVariable long bookingId){
         return ResponseEntity.ok(bookingService.confirmCheckIn(bookingId));
