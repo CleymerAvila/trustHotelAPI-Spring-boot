@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 
 import edu.unicolombo.trustHotelAPI.infrastructure.errors.exception.BusinessLogicValidationException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,7 +32,7 @@ public class BookingController {
     public BookingService bookingService;
 
     @PostMapping
-    public ResponseEntity<BookingDTO> registerBooking(@RequestBody RegisterBookingDTO data, UriComponentsBuilder uriBuilder) throws BusinessLogicValidationException {
+    public ResponseEntity<BookingDTO> registerBooking(@Valid  @RequestBody RegisterBookingDTO data, UriComponentsBuilder uriBuilder) throws BusinessLogicValidationException {
         var registeredBooking = bookingService.registerBooking(data);
         URI url = uriBuilder.path("/bookings/{bookingId}").buildAndExpand(registeredBooking.bookingId()).toUri();
         return ResponseEntity.created(url).body(registeredBooking);
