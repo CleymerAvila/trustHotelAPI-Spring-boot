@@ -109,7 +109,7 @@ CREATE TABLE invoices(
 	invoice_type VARCHAR(10), # INICIAL O FINAL--
     issue_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     total_amount DECIMAL(10,2) NOT NULL,
-    status VARCHAR(10) NULL,
+    status VARCHAR(20) NULL,
     discount_type VARCHAR(20) NULL,
     applied_discount DECIMAL(10,2) NULL,
     -- FOREIGN KEYS
