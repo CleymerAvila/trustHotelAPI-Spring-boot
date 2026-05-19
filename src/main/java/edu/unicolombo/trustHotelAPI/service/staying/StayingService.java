@@ -47,33 +47,33 @@ public class StayingService {
         checkOutService.enqueueCheckOut(stayingId);
     }
 
-    public StayingDTO checkOut(Long stayingId){
-        var staying = stayingRepository.findById(stayingId)
-                .orElseThrow(() -> new EntityNotFoundException("La estadia no ha sido encontrada en la base de datos"));
-
-        if(!staying.getStatus().equals(StayingStatus.ON_PROGRESS)){
-            throw new BusinessLogicValidationException("No se puede realizar el checkOut de la estadia");
-        }
-
-        Optional<Invoice> existingInvoice = invoiceRepository.findByStayingAndInvoiceType(staying, InvoiceType.FINAL);
-        staying.setCheckOutDate(LocalDate.now());
-        staying.setTotalAmount(calculateTotalAmountFromStaying(staying));
-        System.out.println("Cuanto es el calculo total de la estadia: " + calculateTotalAmountFromStaying(staying));
-        if(!existingInvoice.isPresent()){
-            // actualizar valores reserva
-            Invoice initialInvoice = new Invoice();
-            initialInvoice.setStaying(staying);
-            initialInvoice.setClient(staying.getBooking().getClient());
-            initialInvoice.setInvoiceType(InvoiceType.FINAL);
-            initialInvoice.setTotalAmount(calculateTotalAmountFromStaying(staying));
-            initialInvoice.setIssueDate(LocalDateTime.now());
-            initialInvoice.setStatus("PENDIENTE");
-
-            staying.setFinalInvoice(initialInvoice);
-        }
-        stayingRepository.save(staying);
-        return new StayingDTO(staying);
-    }
+//    public StayingDTO checkOut(Long stayingId){
+//        var staying = stayingRepository.findById(stayingId)
+//                .orElseThrow(() -> new EntityNotFoundException("La estadia no ha sido encontrada en la base de datos"));
+//
+//        if(!staying.getStatus().equals(StayingStatus.ON_PROGRESS)){
+//            throw new BusinessLogicValidationException("No se puede realizar el checkOut de la estadia");
+//        }
+//
+//        Optional<Invoice> existingInvoice = invoiceRepository.findByStayingAndInvoiceType(staying, InvoiceType.FINAL);
+//        staying.setCheckOutDate(LocalDate.now());
+//        staying.setTotalAmount(calculateTotalAmountFromStaying(staying));
+//        System.out.println("Cuanto es el calculo total de la estadia: " + calculateTotalAmountFromStaying(staying));
+//        if(!existingInvoice.isPresent()){
+//            // actualizar valores reserva
+//            Invoice initialInvoice = new Invoice();
+//            initialInvoice.setStaying(staying);
+//            initialInvoice.setClient(staying.getBooking().getClient());
+//            initialInvoice.setInvoiceType(InvoiceType.FINAL);
+//            initialInvoice.setTotalAmount(calculateTotalAmountFromStaying(staying));
+//            initialInvoice.setIssueDate(LocalDateTime.now());
+//            initialInvoice.setStatus("PENDIENTE");
+//
+//            staying.setFinalInvoice(initialInvoice);
+//        }
+//        stayingRepository.save(staying);
+//        return new StayingDTO(staying);
+//    }
     public void undoLastCheckOut(){
         checkOutService.undoLastCheckOut();
     }

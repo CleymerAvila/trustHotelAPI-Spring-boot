@@ -26,6 +26,8 @@ public class PaymentService {
     public PaymentDTO registerPayment(RegisterNewPaymentDTO data) {
         var invoice = invoiceRepository.findById(data.invoiceId())
                 .orElseThrow(() -> new EntityNotFoundException("No existe la factura referenciada"));
+
+        invoice.setClient(invoice.getBooking() != null ? invoice.getBooking().getClient() : invoice.getStaying().getBooking().getClient() );
         var payment = new Payment(data);
         invoice.addPayment(payment);
         payment.setInvoice(invoice);

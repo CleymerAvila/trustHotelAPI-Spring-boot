@@ -14,6 +14,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,9 +30,25 @@ public class InvoiceService {
     @Autowired
     public StayingRepository stayingRepository;
 
-    public Invoice registerInvoice(RegisterNewInvoiceDTO data) {
-        var invoice = new Invoice(data);
-        return invoiceRepository.save(invoice);
+    public InvoiceDTO registerFinal(long stayingId) {
+
+        var staying = stayingRepository.findById(stayingId)
+            .orElseThrow(() ->
+                new EntityNotFoundException(
+                "La estadia no ha sido encontrada")
+            );
+
+        var invoice = new Invoice(
+                staying,
+                staying.getBooking().getClient(),
+                InvoiceType.FINAL,
+                "none",
+                0D,
+                0D
+        );
+        invoice.calculateTotalAmount(staying);
+        staying.setFinalInvoice(invoice);
+        return new InvoiceDTO(invoiceRepository.save(invoice));
     }
 
     public InvoiceDTO registerInitial(long bookingId){
