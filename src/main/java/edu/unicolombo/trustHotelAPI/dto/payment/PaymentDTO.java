@@ -21,7 +21,9 @@ public record PaymentDTO(long paymentId,
                 payment.getPaymentId(),
                 new SimpleInvoiceDTO(
                         payment.getInvoice().getInvoiceId(),
-                        payment.getInvoice().getBooking().getClient().getName()
+                        payment.getInvoice().getBooking() != null
+                        ? payment.getInvoice().getBooking().getClient().getName()
+                        : payment.getInvoice().getStaying().getBooking().getClient().getName()
                 ),
                 payment.getPaymentMethod(),
                 payment.getTotalAmount(),

@@ -3,8 +3,7 @@ package edu.unicolombo.trustHotelAPI.domain.model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import edu.unicolombo.trustHotelAPI.domain.model.enums.InvoiceType;
 import edu.unicolombo.trustHotelAPI.domain.model.person.Client;
-import edu.unicolombo.trustHotelAPI.dto.invoice.RegisterInitialDto;
-import edu.unicolombo.trustHotelAPI.dto.invoice.RegisterNewInvoiceDTO;
+import edu.unicolombo.trustHotelAPI.dto.invoice.RegisterFinalDto;
 import edu.unicolombo.trustHotelAPI.dto.invoice.UpdateInvoiceDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,7 +11,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -67,12 +65,19 @@ public class Invoice {
         this.totalAmount = totalAmount;
     }
 
-    public Invoice(RegisterNewInvoiceDTO data) {
-        this.invoiceType = data.invoiceType();
-        this.discountType = data.discountType();
-        this.appliedDiscount  = data.appliedDiscount();
-        this.totalAmount = data.totalAmount();
+
+    public Invoice(Staying staying, Client client, InvoiceType invoiceType,
+                   String discountType, Double appliedDiscount, Double totalAmount) {
+        this.staying = staying;
+        this.client = client;
+        this.invoiceType = invoiceType;
+        this.issueDate = LocalDateTime.now();
+        this.status = "PENDIENTE";
+        this.discountType = discountType;
+        this.appliedDiscount = appliedDiscount;
+        this.totalAmount = totalAmount;
     }
+
 
     public void calculateTotalAmount(Booking booking) {
         long bookingDays = ChronoUnit.DAYS.between(booking.getStartDate(), booking.getEndDate());
@@ -80,7 +85,8 @@ public class Invoice {
     }
 
     public void calculateTotalAmount(Staying staying){
-        long stayingDays = ChronoUnit.DAYS.between(staying.getCheckInDate() , staying.getCheckOutDate());
+        var booking = staying.getBooking();
+        long stayingDays = ChronoUnit.DAYS.between(booking.getStartDate() , booking.getEndDate());
         this.totalAmount =  stayingDays * staying.getBooking().getRoom().getPricePerNight();
     }
     public void updateData(UpdateInvoiceDTO data) {

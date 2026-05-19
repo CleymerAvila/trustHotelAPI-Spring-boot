@@ -42,10 +42,25 @@ public class CheckOutService {
         Staying staying = stayingRepository.findById(stayingId).orElseThrow(
                 () -> new EntityNotFoundException("La estadia no existen en la base de datos")
         );
+
+        if(staying.getFinalInvoice()==null){
+            throw new BusinessLogicValidationException("La estadia aún no cuenta con una factura final, porfavor genere una factura final");
+        }
         if(!staying.getStatus().equals(StayingStatus.ON_PROGRESS)){
             throw new BusinessLogicValidationException("No es posible realizar un checkout de la estadia: "
                     + staying.getStayingId() + " ya que no se encuentra en Progreso");
         }
+
+        LocalDate checkOutDate = LocalDate.now();
+        var invoice = staying.getFinalInvoice();
+        if(checkOutDate.isBefore(staying.getCheckInDate()) ||  checkOutDate.isAfter(staying.getCheckOutDate())){
+            throw new BusinessLogicValidationException("No se puede confirmar checkout fuera de la fechas establecidas");
+        }
+
+        if(!invoice.getStatus().equals("FULLY_PAID")){
+            throw new BusinessLogicValidationException("No se puede confirmar un checkout sin realizar los pagos necesarios");
+        }
+        staying.setCheckOutDate(checkOutDate);
         checkOutQueue.add(new CheckOutTask(stayingId));
         log.info("Check-Out encolado para la estadia: {}", stayingId);
     }
@@ -110,8 +125,6 @@ public class CheckOutService {
             throw new BusinessLogicValidationException("La estadia no cuenta aún con una factura final por favor genere una para confirmar checkout");
         }
         // TODO: implements the payments for the final invoices
-        var finalInvoice = staying.getFinalInvoice();
-        finalInvoice.setStatus("PAGADO");
         Room stayingRoom = staying.getBooking().getRoom();
         staying.setCheckOutDate(LocalDate.now());
         staying.setStatus(StayingStatus.FINISHED);

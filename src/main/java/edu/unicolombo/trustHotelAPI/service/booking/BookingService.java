@@ -124,9 +124,9 @@ public class BookingService {
         // inicializar valores estadia
         LocalDate checkInDate = LocalDate.now();
 
-        if(checkInDate.isBefore(booking.getStartDate()) || checkInDate.isAfter(booking.getEndDate())){
-            throw new BusinessLogicValidationException("No es posible realizar el check-in fuera de las fechas establecidas de la reserva: " + booking.getBookingId());
-        }
+//        if(checkInDate.isBefore(booking.getStartDate()) || checkInDate.isAfter(booking.getEndDate())){
+//            throw new BusinessLogicValidationException("No es posible realizar el check-in fuera de las fechas establecidas de la reserva: " + booking.getBookingId());
+//        }
 
         if(booking.getStatus().equals(BookingStatus.CANCELED)){
             throw new BusinessLogicValidationException("No se puede realizar check in de una reserva cancelada");
