@@ -19,11 +19,10 @@ public class InvoiceController {
     public InvoiceService invoiceService;
 
     @PostMapping("new-final")
-    public ResponseEntity<InvoiceDTO> RegisterInvoices(@RequestBody RegisterNewInvoiceDTO data, UriComponentsBuilder uriBuilder) {
-        var registeredInvoices = invoiceService.registerInvoice(data);
-        URI url = uriBuilder.path("/invoice/{invoiceId}").buildAndExpand(registeredInvoices.getInvoiceId()).toUri();
-
-        return ResponseEntity.created(url).body(new InvoiceDTO(registeredInvoices));
+    public ResponseEntity<InvoiceDTO> registerNewFinal(@RequestBody RegisterFinalDto data, UriComponentsBuilder uriBuilder) {
+        var registeredInvoices = invoiceService.registerFinal(data.stayingId());
+        URI url = uriBuilder.path("/invoice/{invoiceId}").buildAndExpand(registeredInvoices.invoiceId()).toUri();
+        return ResponseEntity.created(url).body(registeredInvoices);
     }
 
     @PostMapping("new-initial")
