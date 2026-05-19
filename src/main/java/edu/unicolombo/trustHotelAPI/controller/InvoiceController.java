@@ -1,9 +1,6 @@
 package edu.unicolombo.trustHotelAPI.controller;
 
-import edu.unicolombo.trustHotelAPI.dto.invoice.InvoiceDTO;
-import edu.unicolombo.trustHotelAPI.dto.invoice.InvoiceDetailsDTO;
-import edu.unicolombo.trustHotelAPI.dto.invoice.RegisterNewInvoiceDTO;
-import edu.unicolombo.trustHotelAPI.dto.invoice.UpdateInvoiceDTO;
+import edu.unicolombo.trustHotelAPI.dto.invoice.*;
 import edu.unicolombo.trustHotelAPI.service.InvoiceService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +18,20 @@ public class InvoiceController {
     @Autowired
     public InvoiceService invoiceService;
 
-    @PostMapping
+    @PostMapping("new-final")
     public ResponseEntity<InvoiceDTO> RegisterInvoices(@RequestBody RegisterNewInvoiceDTO data, UriComponentsBuilder uriBuilder) {
         var registeredInvoices = invoiceService.registerInvoice(data);
         URI url = uriBuilder.path("/invoice/{invoiceId}").buildAndExpand(registeredInvoices.getInvoiceId()).toUri();
 
         return ResponseEntity.created(url).body(new InvoiceDTO(registeredInvoices));
+    }
+
+    @PostMapping("new-initial")
+    public ResponseEntity<InvoiceDTO> registerNewInitial(@RequestBody RegisterInitialDto data, UriComponentsBuilder uriComponentsBuilder){
+        var registeredInvoice = invoiceService.registerInitial(data.bookingId());
+        URI url = uriComponentsBuilder.path("/invoice/{invoiceId}").buildAndExpand(registeredInvoice.invoiceId()).toUri();
+
+        return ResponseEntity.created(url).body(registeredInvoice);
     }
 
     @GetMapping

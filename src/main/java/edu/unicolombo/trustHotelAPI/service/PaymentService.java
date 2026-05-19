@@ -1,6 +1,7 @@
 package edu.unicolombo.trustHotelAPI.service;
 
 import edu.unicolombo.trustHotelAPI.domain.model.Payment;
+import edu.unicolombo.trustHotelAPI.domain.model.enums.InvoiceType;
 import edu.unicolombo.trustHotelAPI.domain.repository.InvoiceRepository;
 import edu.unicolombo.trustHotelAPI.domain.repository.PaymentRepository;
 import edu.unicolombo.trustHotelAPI.dto.payment.PaymentDTO;
@@ -28,6 +29,23 @@ public class PaymentService {
         var payment = new Payment(data);
         invoice.addPayment(payment);
         payment.setInvoice(invoice);
+        Double totalPaid = invoice.getPayments().stream().mapToDouble(Payment::getTotalAmount).sum();
+        System.out.println("Total Pagado: " + totalPaid);
+        if (invoice.getInvoiceType().equals(InvoiceType.INITIAL)) {
+            if(Double.compare(totalPaid, invoice.getBooking().getAdvancePayment()) >= 0){
+                System.out.println("Total pagado: " +  totalPaid + " es igual o mayor a "
+                        + invoice.getBooking().getAdvancePayment() + " ( " + (Double.compare(totalPaid, invoice.getBooking().getAdvancePayment()) >= 0));
+                invoice.setStatus("FULLY_PAID");
+            } else {
+                invoice.setStatus("PARTIALLY_PAID");
+            }
+        } else {
+            if (totalPaid.equals(invoice.getTotalAmount())){
+                invoice.setStatus("FULLY_PAID");
+            } else {
+                invoice.setStatus("PARTIALLY_PAID");
+            }
+        }
         return new PaymentDTO(paymentRepository.save(payment));
     }
 
