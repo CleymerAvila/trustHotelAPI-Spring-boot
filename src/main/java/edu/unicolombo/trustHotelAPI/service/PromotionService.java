@@ -8,6 +8,7 @@ import edu.unicolombo.trustHotelAPI.dto.promotion.UpdatePromotionDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,6 +17,10 @@ public class PromotionService {
 
     @Autowired
     public PromotionRepository promotionRepository;
+
+    public PromotionService(PromotionRepository promotionRepository) {
+        this.promotionRepository = promotionRepository;
+    }
 
     public PromotionDTO registerPromotion(RegisterNewPromotionDTO data) {
         var promotion = new Promotion(data);
@@ -46,4 +51,9 @@ public class PromotionService {
 
         return new PromotionDTO(promotionRepository.save(promotion));
     }
+
+    public List<Promotion> getActivePromotions(LocalDate startDate, LocalDate endDate) {
+        return promotionRepository.findActivePromotions(startDate, endDate);
+    }
+
 }
