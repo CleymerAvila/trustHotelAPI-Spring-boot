@@ -1,16 +1,19 @@
 package edu.unicolombo.trustHotelAPI.controller;
 
+import edu.unicolombo.trustHotelAPI.domain.model.Promotion;
 import edu.unicolombo.trustHotelAPI.dto.promotion.PromotionDTO;
 import edu.unicolombo.trustHotelAPI.dto.promotion.RegisterNewPromotionDTO;
 import edu.unicolombo.trustHotelAPI.dto.promotion.UpdatePromotionDTO;
 import edu.unicolombo.trustHotelAPI.service.PromotionService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -19,6 +22,10 @@ public class PromotionController {
 
     @Autowired
     PromotionService promotionService;
+
+    public PromotionController(PromotionService promotionService) {
+        this.promotionService = promotionService;
+    }
 
     @PostMapping
     public ResponseEntity<PromotionDTO> registerPromotion(@RequestBody RegisterNewPromotionDTO data, UriComponentsBuilder uriBuilder) {
@@ -49,4 +56,12 @@ public class PromotionController {
     public ResponseEntity<PromotionDTO> updatePromotion(@PathVariable long promotionId, @RequestBody UpdatePromotionDTO data){
         return ResponseEntity.ok(promotionService.updatePromotion(promotionId, data));
     }
+
+    @GetMapping("/active")
+    public List<Promotion> getActivePromotions(
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        return promotionService.getActivePromotions(startDate, endDate);
+    }
+
 }
