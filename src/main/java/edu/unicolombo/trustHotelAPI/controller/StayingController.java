@@ -36,11 +36,6 @@ public class StayingController {
         return ResponseEntity.accepted().body("Check-out en cola para procesamiento");
     }
 
-//    @GetMapping("/check-out/{stayingId}")
-//    public ResponseEntity<StayingDTO> checkOutProcess(@PathVariable Long stayingId){
-//        return ResponseEntity.ok(stayingService.checkOut(stayingId));
-//    }
-
     @GetMapping("/check-out/undo")
     public ResponseEntity<String> undoLastCheckOut(){
         stayingService.undoLastCheckOut();
