@@ -2,15 +2,15 @@ package edu.unicolombo.trustHotelAPI.service;
 
 import edu.unicolombo.trustHotelAPI.domain.model.Invoice;
 import edu.unicolombo.trustHotelAPI.domain.model.Room;
+import edu.unicolombo.trustHotelAPI.domain.model.enums.InvoiceType;
+import edu.unicolombo.trustHotelAPI.domain.repository.BookingRepository;
 import edu.unicolombo.trustHotelAPI.domain.repository.InvoiceRepository;
 import edu.unicolombo.trustHotelAPI.domain.repository.StayingRepository;
 import edu.unicolombo.trustHotelAPI.dto.client.ClientDTO;
-import edu.unicolombo.trustHotelAPI.dto.invoice.InvoiceDTO;
-import edu.unicolombo.trustHotelAPI.dto.invoice.InvoiceDetailsDTO;
-import edu.unicolombo.trustHotelAPI.dto.invoice.RegisterNewInvoiceDTO;
-import edu.unicolombo.trustHotelAPI.dto.invoice.UpdateInvoiceDTO;
+import edu.unicolombo.trustHotelAPI.dto.invoice.*;
 import edu.unicolombo.trustHotelAPI.dto.payment.PaymentDTO;
 import edu.unicolombo.trustHotelAPI.dto.room.RoomDTO;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,11 +24,30 @@ public class InvoiceService {
     public InvoiceRepository invoiceRepository;
 
     @Autowired
+    public BookingRepository bookingRepository;
+
+    @Autowired
     public StayingRepository stayingRepository;
 
     public Invoice registerInvoice(RegisterNewInvoiceDTO data) {
         var invoice = new Invoice(data);
         return invoiceRepository.save(invoice);
+    }
+
+    public InvoiceDTO registerInitial(long bookingId){
+        var booking = bookingRepository.findById(bookingId).orElseThrow(() -> new EntityNotFoundException("La reserva no ha sido encontrada"));
+
+        var invoice  = new Invoice(
+                booking,
+                booking.getClient(),
+                InvoiceType.INITIAL,
+                "none",
+                0D,
+                0D
+        );
+        invoice.calculateTotalAmount(booking);
+        booking.setInitialInvoice(invoice);
+        return new InvoiceDTO(invoiceRepository.save(invoice));
     }
 
     public Invoice findById(long id) {return invoiceRepository.getReferenceById(id);}

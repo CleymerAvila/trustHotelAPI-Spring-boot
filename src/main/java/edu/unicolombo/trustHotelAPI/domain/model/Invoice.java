@@ -3,6 +3,7 @@ package edu.unicolombo.trustHotelAPI.domain.model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import edu.unicolombo.trustHotelAPI.domain.model.enums.InvoiceType;
 import edu.unicolombo.trustHotelAPI.domain.model.person.Client;
+import edu.unicolombo.trustHotelAPI.dto.invoice.RegisterInitialDto;
 import edu.unicolombo.trustHotelAPI.dto.invoice.RegisterNewInvoiceDTO;
 import edu.unicolombo.trustHotelAPI.dto.invoice.UpdateInvoiceDTO;
 import jakarta.persistence.*;
@@ -11,7 +12,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "Invoice")
@@ -41,7 +45,7 @@ public class Invoice {
     private Client client;
     @JsonManagedReference
     @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Payment> payments;
+    private List<Payment> payments = new ArrayList<>();
 
     public Invoice(Staying staying, InvoiceType invoiceType, String discountType, Double appliedDiscount, Double totalAmount) {
         this.staying = staying;
@@ -68,6 +72,16 @@ public class Invoice {
         this.discountType = data.discountType();
         this.appliedDiscount  = data.appliedDiscount();
         this.totalAmount = data.totalAmount();
+    }
+
+    public void calculateTotalAmount(Booking booking) {
+        long bookingDays = ChronoUnit.DAYS.between(booking.getStartDate(), booking.getEndDate());
+        this.totalAmount =  bookingDays * booking.getRoom().getPricePerNight();
+    }
+
+    public void calculateTotalAmount(Staying staying){
+        long stayingDays = ChronoUnit.DAYS.between(staying.getCheckInDate() , staying.getCheckOutDate());
+        this.totalAmount =  stayingDays * staying.getBooking().getRoom().getPricePerNight();
     }
     public void updateData(UpdateInvoiceDTO data) {
 

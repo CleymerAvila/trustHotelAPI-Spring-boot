@@ -109,35 +109,7 @@ public class BookingService {
         return new BookingDTO(bookingRepository.save(booking));
     }
 
-
     public BookingDTO checkIn(Long bookingId){
-        var booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new EntityNotFoundException("La reserva no ha sido encontrada en la base de datos"));
-
-        if(!booking.getStatus().equals(BookingStatus.PENDING)){
-            throw new BusinessLogicValidationException("No se puede realizar el check-in de la reserva "+ bookingId +
-                    " por que no se encuentra pendiente");
-        }
-
-        Optional<Invoice> existingInvoice = invoiceRepository.findByBookingAndInvoiceType(booking, InvoiceType.INITIAL);
-
-        if (!existingInvoice.isPresent()){
-            // actualizar valores reserva
-            Invoice initialInvoice = new Invoice();
-            initialInvoice.setBooking(booking);
-            initialInvoice.setClient(booking.getClient());
-            initialInvoice.setInvoiceType(InvoiceType.INITIAL);
-            initialInvoice.setTotalAmount(booking.getAdvancePayment());
-            initialInvoice.setIssueDate(LocalDateTime.now());
-            initialInvoice.setStatus("PENDIENTE");
-
-            booking.setInitialInvoice(initialInvoice);
-        }
-        bookingRepository.save(booking);
-        return new BookingDTO(booking);
-    }
-
-    public BookingDTO confirmCheckIn(Long bookingId){
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new EntityNotFoundException("La reserva no existe en la base de datos"));
 
@@ -152,17 +124,18 @@ public class BookingService {
         // inicializar valores estadia
         LocalDate checkInDate = LocalDate.now();
 
-//        if(checkInDate.isBefore(booking.getStartDate()) || checkInDate.isAfter(booking.getEndDate())){
-//            throw new BusinessLogicValidationException("No es posible realizar el check-in fuera de las fechas establecidas de la reserva: " + booking.getBookingId());
-//        }
+        if(checkInDate.isBefore(booking.getStartDate()) || checkInDate.isAfter(booking.getEndDate())){
+            throw new BusinessLogicValidationException("No es posible realizar el check-in fuera de las fechas establecidas de la reserva: " + booking.getBookingId());
+        }
 
         if(booking.getStatus().equals(BookingStatus.CANCELED)){
             throw new BusinessLogicValidationException("No se puede realizar check in de una reserva cancelada");
         }
         // TODO: implements the payments for the initial invoices
-        invoice.setStatus("PAGADO");
+        if(!invoice.getStatus().equals("FULLY_PAID")){
+            throw new BusinessLogicValidationException("No se puede confirmar check-in sin realizar los pagos necesarios");
+        }
         booking.setStatus(BookingStatus.CONFIRMED);
-
         bookingRepository.save(booking);
         invoiceRepository.save(invoice);
         Staying staying = new Staying();
@@ -170,7 +143,6 @@ public class BookingService {
         staying.setCheckInDate(checkInDate);
         staying.setStatus(StayingStatus.ON_PROGRESS);
         stayingRepository.save(staying);
-
         return new BookingDTO(booking);
     }
     public List<BookingDTO> getBookingsByClientDni(String clientDni) {
