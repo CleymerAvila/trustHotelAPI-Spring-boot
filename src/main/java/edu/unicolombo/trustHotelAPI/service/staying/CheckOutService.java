@@ -52,15 +52,16 @@ public class CheckOutService {
         }
 
         LocalDate checkOutDate = LocalDate.now();
+        staying.setCheckOutDate(checkOutDate);
         var invoice = staying.getFinalInvoice();
         if(checkOutDate.isBefore(staying.getCheckInDate()) ||  checkOutDate.isAfter(staying.getCheckOutDate())){
+            staying.setCheckOutDate(null);
             throw new BusinessLogicValidationException("No se puede confirmar checkout fuera de la fechas establecidas");
         }
 
         if(!invoice.getStatus().equals("FULLY_PAID")){
             throw new BusinessLogicValidationException("No se puede confirmar un checkout sin realizar los pagos necesarios");
         }
-        staying.setCheckOutDate(checkOutDate);
         checkOutQueue.add(new CheckOutTask(stayingId));
         log.info("Check-Out encolado para la estadia: {}", stayingId);
     }
